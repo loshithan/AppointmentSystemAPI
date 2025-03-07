@@ -1,25 +1,20 @@
-// using Microsoft.AspNetCore.Mvc;
-// using AppointmentSystem.Application.Services;
-// using AppointmentSystem.Application.DTOs;
+using Microsoft.AspNetCore.Mvc;
+using MediatR;
 
-// namespace AppointmentSystem.Api.Controllers
-// {
-//     [ApiController]
-//     [Route("api/[controller]")]
-//     public class AppointmentController : ControllerBase
-//     {
-//         private readonly IAppointmentService _appointmentService;
+namespace AppointmentSystem.Api.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class AppointmentController : ControllerBase
+    {
+         private ISender _mediator = null!;
+        protected ISender Mediator => _mediator ??= HttpContext.RequestServices.GetRequiredService<ISender>();
 
-//         public AppointmentController(IAppointmentService appointmentService)
-//         {
-//             _appointmentService = appointmentService;
-//         }
-
-//         [HttpGet]
-//         public async Task<IActionResult> GetAll()
-//         {
-//             var appointments = await _appointmentService.GetAllAppointmentsAsync();
-//             return Ok(appointments);
-//         }
-//     }
-// }
+        [HttpGet("{TenantId}")]
+        public async Task<ActionResult<List<Appointment>>> GetAll()
+        {
+            var query =  new GetAllAppointments.Query();
+            return await  Mediator.Send(query);
+        }
+    }
+}
