@@ -7,10 +7,10 @@ namespace AppointmentSystem.Api.Controllers
     [Route("api/[controller]")]
     public class AppointmentController : ControllerBase
     {
-         private ISender _mediator = null!;
+        private ISender _mediator = null!;
         protected ISender Mediator => _mediator ??= HttpContext.RequestServices.GetRequiredService<ISender>();
 
-        [HttpGet("{TenantId}")]
+        [HttpGet]
         public async Task<ActionResult<List<Appointment>>> GetAll()
         {
             var query =  new GetAllAppointments.Query();
