@@ -4,7 +4,8 @@ public class GetAllAppointments
 {
     public class Query : IRequest<List<Appointment>>
     {
-        public string SearchParam { get; set; } = "" ; // Foreign Key for Patient
+        public string SearchParam { get; set; } 
+        //= "" ; // Foreign Key for Patient
        
         
     }

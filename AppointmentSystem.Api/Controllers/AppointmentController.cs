@@ -11,9 +11,9 @@ namespace AppointmentSystem.Api.Controllers
         protected ISender Mediator => _mediator ??= HttpContext.RequestServices.GetRequiredService<ISender>();
 
         [HttpGet]
-        public async Task<ActionResult<List<Appointment>>> GetAll()
+        public async Task<ActionResult<List<Appointment>>> GetAll([FromQuery] string searchParam)
         {
-            var query =  new GetAllAppointments.Query();
+            var query =  new GetAllAppointments.Query(){SearchParam = searchParam};
             return await  Mediator.Send(query);
         }
     }

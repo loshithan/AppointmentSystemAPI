@@ -1,7 +1,9 @@
 using AppointmentSystem.Infrastructure.Persistence;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,6 +44,12 @@ builder.Services.AddCors(options =>
         .AddEntityFrameworkStores<AppointmentSystemDbContext>()
         .AddDefaultTokenProviders();
 builder.Services.AddControllers();
+builder.Services.
+// AddFluentValidation(cfg =>
+// {
+//     cfg.RegisterValidatorsFromAssemblyContaining<GetAllAppointmentsValidator>();
+// });
+AddValidatorsFromAssemblyContaining<GetAllAppointmentsValidator>();
 
 
 var app = builder.Build();
