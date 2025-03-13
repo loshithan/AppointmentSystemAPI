@@ -1,4 +1,6 @@
 using System.Text;
+using AppointmentSystem.Infrastructure;
+using AppointmentSystem.Infrastructure.Infrastructure.Seeding;
 using AppointmentSystem.Infrastructure.Persistence;
 using FluentValidation;
 using MediatR;
@@ -11,11 +13,12 @@ using Microsoft.IdentityModel.Tokens;
 var builder = WebApplication.CreateBuilder(args);
 
 
-// Add services to the container.
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
-builder.Services.AddScoped<IProfessionalAvailabilityRepository, ProfessionalAvailabilityRepository>();
+// // Add services to the container.
+// builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+// builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+// builder.Services.AddScoped<IProfessionalAvailabilityRepository, ProfessionalAvailabilityRepository>();
 
+builder.Services.AddInfrastructureServices(builder.Configuration); // Infrastructure Layer
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -29,8 +32,8 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(
     typeof(Program).Assembly // API layer (if needed)
 ));
 // 🔹 Register DbContext (EF Core)
-builder.Services.AddDbContext<AppointmentSystemDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// builder.Services.AddDbContext<AppointmentSystemDbContext>(options =>
+//     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // resigter Cors
 builder.Services.AddCors(options =>
@@ -43,9 +46,7 @@ builder.Services.AddCors(options =>
                                 .AllowAnyMethod();
                       });
 });
- builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-        .AddEntityFrameworkStores<AppointmentSystemDbContext>()
-        .AddDefaultTokenProviders();
+
 builder.Services.AddControllers();
 
 //fluent validation config
@@ -53,7 +54,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<GetAllAppointmentsValidator
 
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("Jwt");
-var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]);
+var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]??"YourSuperSecretKeyHere_1234567890");
 
 builder.Services.AddAuthentication(options =>
 {
@@ -82,6 +83,21 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+// Seed data during application startup
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var env = services.GetRequiredService<IHostEnvironment>();
+    try
+    {
+        await Seed.Initialize(services);
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while seeding the database.");
+    }
 }
 
 app.UseHttpsRedirection();
