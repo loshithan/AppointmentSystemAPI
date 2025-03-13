@@ -1,36 +1,58 @@
-
 using AppointmentSystem.Infrastructure.Persistence;
+using AppointmentSystem.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AppointmentSystem.Domain.Entities.AppointmentSystem.Domain.Entities;
 
 public class ProfessionalAvailabilityRepository : IProfessionalAvailabilityRepository
 {
-     private readonly AppointmentSystemDbContext _context;
+    private readonly AppointmentSystemDbContext _context;
 
     public ProfessionalAvailabilityRepository(AppointmentSystemDbContext context)
     {
         _context = context;
     }
-    public Task<AppointmentSystem.Domain.Entities.AppointmentSystem.Domain.Entities.ProfessionalAvailability> AddAsync(AppointmentSystem.Domain.Entities.AppointmentSystem.Domain.Entities.ProfessionalAvailability entity)
+
+    public async Task<ProfessionalAvailability> AddAsync(ProfessionalAvailability entity)
     {
-        throw new NotImplementedException();
+        await _context.ProfessionalAvailabilities.AddAsync(entity);
+        return entity;
     }
 
-    public Task<bool> DeleteAsync(Guid id)
+    public async Task<bool> DeleteAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var entity = await _context.ProfessionalAvailabilities.FindAsync(id);
+        if (entity == null)
+            return false;
+
+        _context.ProfessionalAvailabilities.Remove(entity);
+        return true;
     }
 
-    public Task<(List<AppointmentSystem.Domain.Entities.AppointmentSystem.Domain.Entities.ProfessionalAvailability>, int)> GetAllAsync(string parameters)
+    public async Task<(List<ProfessionalAvailability>, int)> GetAllAsync(string parameters = null)
     {
-        throw new NotImplementedException();
+        IQueryable<ProfessionalAvailability> query = _context.ProfessionalAvailabilities;
+
+        if (!string.IsNullOrEmpty(parameters))
+        {
+            query = _context.ProfessionalAvailabilities.FromSqlRaw(parameters);
+        }
+
+        var availabilityList = await query.ToListAsync();
+        return (availabilityList, availabilityList.Count);
     }
 
-    public Task<AppointmentSystem.Domain.Entities.AppointmentSystem.Domain.Entities.ProfessionalAvailability> GetByIdAsync(Guid id)
+    public async Task<ProfessionalAvailability> GetByIdAsync(Guid id)
     {
-        throw new NotImplementedException();
+        return await _context.ProfessionalAvailabilities.FindAsync(id);
     }
 
-    public Task<AppointmentSystem.Domain.Entities.AppointmentSystem.Domain.Entities.ProfessionalAvailability> UpdateAsync(AppointmentSystem.Domain.Entities.AppointmentSystem.Domain.Entities.ProfessionalAvailability entity)
+    public async Task<ProfessionalAvailability> UpdateAsync(ProfessionalAvailability entity)
     {
-        throw new NotImplementedException();
+        _context.ProfessionalAvailabilities.Update(entity);
+        return entity;
     }
 }

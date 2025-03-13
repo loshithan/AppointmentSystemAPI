@@ -13,7 +13,7 @@ public class UnitOfWork:IUnitOfWork
 
     public IAppointmentRepository Appointments => _appointments ??= new AppointmentRepository(_context);
 
-    public IProfessionalAvailabilityRepository professionalAvailabilities => _professionalAvailabilities ??= new ProfessionalAvailabilityRepository(_context);
+    public IProfessionalAvailabilityRepository ProfessionalAvailabilities => _professionalAvailabilities ??= new ProfessionalAvailabilityRepository(_context);
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
