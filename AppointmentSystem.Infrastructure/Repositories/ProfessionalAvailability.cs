@@ -14,7 +14,7 @@ public class ProfessionalAvailabilityRepository : IProfessionalAvailabilityRepos
         throw new NotImplementedException();
     }
 
-    public Task<bool> DeleteAsync(int id)
+    public Task<bool> DeleteAsync(Guid id)
     {
         throw new NotImplementedException();
     }
@@ -24,7 +24,7 @@ public class ProfessionalAvailabilityRepository : IProfessionalAvailabilityRepos
         throw new NotImplementedException();
     }
 
-    public Task<AppointmentSystem.Domain.Entities.AppointmentSystem.Domain.Entities.ProfessionalAvailability> GetByIdAsync(int id)
+    public Task<AppointmentSystem.Domain.Entities.AppointmentSystem.Domain.Entities.ProfessionalAvailability> GetByIdAsync(Guid id)
     {
         throw new NotImplementedException();
     }

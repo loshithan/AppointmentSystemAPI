@@ -1,69 +1,56 @@
-
 using AppointmentSystem.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 public class AppointmentRepository : IAppointmentRepository
 {
-     private readonly AppointmentSystemDbContext _context;
-    //  List<Appointment> appointments = new List<Appointment>
-    // {
-    //     new Appointment
-    //     {
-    //         Id = Guid.NewGuid(),
-    //         PatientId = "P001",
-    //         ProfessionalId = "D001",
-    //         AppointmentDate = DateTime.UtcNow.AddDays(1),
-    //         Status = AppointmentStatus.Confirmed,
-    //         CreatedAt = DateTime.UtcNow
-    //     },
-    //     new Appointment
-    //     {
-    //         Id = Guid.NewGuid(),
-    //         PatientId = "P002",
-    //         ProfessionalId = "D002",
-    //         AppointmentDate = DateTime.UtcNow.AddDays(2),
-    //         Status = AppointmentStatus.Pending,
-    //         CreatedAt = DateTime.UtcNow
-    //     },
-    //     new Appointment
-    //     {
-    //         Id = Guid.NewGuid(),
-    //         PatientId = "P003",
-    //         ProfessionalId = "D001",
-    //         AppointmentDate = DateTime.UtcNow.AddDays(3),
-    //         Status = AppointmentStatus.Canceled,
-    //         CreatedAt = DateTime.UtcNow
-    //     }
-    // };
-
+    private readonly AppointmentSystemDbContext _context;
 
     public AppointmentRepository(AppointmentSystemDbContext context)
     {
         _context = context;
     }
-    public Task<Appointment> AddAsync(Appointment entity)
+
+    public async Task<Appointment> AddAsync(Appointment entity)
     {
-        throw new NotImplementedException();
+        await _context.Appointments.AddAsync(entity);
+        return entity;
     }
 
-    public Task<bool> DeleteAsync(int id)
+    public async Task<bool> DeleteAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var appointment = await _context.Appointments.FindAsync(id);
+        if (appointment == null)
+            return false;
+
+        _context.Appointments.Remove(appointment);
+        return true;
     }
 
-    public Task<(List<Appointment>, int)> GetAllAsync(string parameters)
+    public async Task<(List<Appointment>, int)> GetAllAsync(string parameters = null)
     {
-        var appointments = _context.Appointments.ToList();
-    return Task.FromResult((appointments, appointments.Count));
+        IQueryable<Appointment> query = _context.Appointments;
 
+        // Apply raw SQL query if parameters are provided (use with caution!)
+        if (!string.IsNullOrEmpty(parameters))
+        {
+            query = _context.Appointments.FromSqlRaw(parameters);
+        }
+
+        // Execute the query and get the results
+        var appointments = await query.ToListAsync();
+
+        // Return the list of appointments and the count
+        return (appointments, appointments.Count);
     }
 
-    public Task<Appointment> GetByIdAsync(int id)
+    public async Task<Appointment> GetByIdAsync(Guid id)
     {
-        throw new NotImplementedException();
+        return await _context.Appointments.FindAsync(id);
     }
 
-    public Task<Appointment> UpdateAsync(Appointment entity)
+    public async Task<Appointment> UpdateAsync(Appointment entity)
     {
-        throw new NotImplementedException();
+        _context.Appointments.Update(entity);
+        return entity;
     }
 }
