@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AppointmentSystem.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize] // Requires authentication for all actions in this controller
+
     public class AppointmentController : ControllerBase
     {
         private ISender _mediator = null!;

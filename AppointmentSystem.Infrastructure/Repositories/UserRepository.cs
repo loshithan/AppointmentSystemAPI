@@ -67,46 +67,52 @@ namespace AppointmentSystem.Infrastructure.Repositories
         }
 
         public async Task<string> GenerateTokenWithClaimsAsync(IApplicationUser user)
-        {
-            // Cast the user to ApplicationUser
-            var appUser = user as ApplicationUser;
-            if (appUser == null)
-                throw new ArgumentException("User must be of type ApplicationUser");
+{
+    // Cast the user to ApplicationUser
+    var appUser = user as ApplicationUser;
+    if (appUser == null)
+        throw new ArgumentException("User must be of type ApplicationUser");
 
-            // Get the user's roles
-            var roles = await _userManager.GetRolesAsync(appUser);
+    // Get the user's roles
+    var roles = await _userManager.GetRolesAsync(appUser);
 
-            // Create a list of claims
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, appUser.Id), // User ID
-                new Claim(ClaimTypes.Name, appUser.UserName),     // Username
-                new Claim(ClaimTypes.Email, appUser.Email)        // Email
-            };
+    // Create a list of claims
+    var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.NameIdentifier, appUser.Id), // User ID
+        new Claim(ClaimTypes.Name, appUser.UserName),     // Username
+        new Claim(ClaimTypes.Email, appUser.Email),       // Email
+        new Claim("aud", "http://localhost:5047")       // ✅ Add Audience claim
+    };
 
-            // Add roles as claims
-            foreach (var role in roles)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role));
-            }
+    // Add roles as claims
+    foreach (var role in roles)
+    {
+        claims.Add(new Claim(ClaimTypes.Role, role));
+    }
 
-            // Create the token descriptor
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddHours(1), // Token expiration time
-                SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes("YourSuperSecretKeyHere_1234567890")), // Secret key
-                    SecurityAlgorithms.HmacSha256 // Security algorithm
-                )
-            };
+    // Get JWT settings from configuration
+    var issuer = "http://localhost:5047"; // Change as needed
+    var audience = "http://localhost:5047"; // Change as needed
+    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("YourSuperSecretKeyHere_1234567890"));
 
-            // Generate the token
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(tokenDescriptor);
+    // Create the token descriptor
+    var tokenDescriptor = new SecurityTokenDescriptor
+    {
+        Subject = new ClaimsIdentity(claims),
+        Expires = DateTime.UtcNow.AddHours(1), // Token expiration time
+        Issuer = issuer,   // ✅ Add Issuer
+        Audience = audience, // ✅ Add Audience
+        SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
+    };
 
-            // Return the token as a string
-            return tokenHandler.WriteToken(token);
-        }
+    // Generate the token
+    var tokenHandler = new JwtSecurityTokenHandler();
+    var token = tokenHandler.CreateToken(tokenDescriptor);
+
+    // Return the token as a string
+    return tokenHandler.WriteToken(token);
+}
+
     }
 }
