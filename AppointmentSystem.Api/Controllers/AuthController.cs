@@ -1,3 +1,4 @@
+using AppointmentSystem.Application.Features.Auth.Commands.Register;
 using AppointmentSystem.Application.Services.AuthService.Queries.Login;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -36,6 +37,17 @@ namespace AppointmentSystem.Api.Controllers
 
             // Return Unauthorized if the login was not successful
             return Unauthorized(new { message = "Invalid username or password." });
+        }
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterCommand command)
+        {
+            var result = await _mediator.Send(command);
+            if (!result.Succeeded)
+            {
+                return BadRequest(new { Errors = result.Errors });
+            }
+
+            return Ok(new { Message = "Registration successful" });
         }
     }
 
