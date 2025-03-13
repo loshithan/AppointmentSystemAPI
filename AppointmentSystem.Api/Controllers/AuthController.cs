@@ -16,7 +16,6 @@ namespace AppointmentSystem.Api.Controllers
             _mediator = mediator;
         }
 
-        // ✅ CQRS-based login endpoint
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
@@ -26,7 +25,17 @@ namespace AppointmentSystem.Api.Controllers
                 Password = request.Password
             };
 
-            return (IActionResult)await _mediator.Send(loginQuery);
+            var result = await _mediator.Send(loginQuery);
+
+            // Check if login was successful or not and return appropriate IActionResult
+            if (result.Succeeded)
+            {
+                // Return the login result as JSON in case of success
+                return Ok(result); // Or return Ok(new { token = result.Token }) if you want to return a specific part of the result
+            }
+
+            // Return Unauthorized if the login was not successful
+            return Unauthorized(new { message = "Invalid username or password." });
         }
     }
 

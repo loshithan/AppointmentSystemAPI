@@ -32,8 +32,8 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(
     typeof(Program).Assembly // API layer (if needed)
 ));
 // 🔹 Register DbContext (EF Core)
-// builder.Services.AddDbContext<AppointmentSystemDbContext>(options =>
-//     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<AppointmentSystemDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // resigter Cors
 builder.Services.AddCors(options =>

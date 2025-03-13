@@ -13,10 +13,11 @@ public static class InfraServiceRegistration
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
         // Register DbContext
-        services.AddDbContext<AppointmentSystemDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
-
-        // // Register Identity
+        // services.AddDbContext<AppointmentSystemDbContext>(options =>
+        //     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+        // var connection = configuration.GetConnectionString("DefaultConnection");
+        // Console.WriteLine("Connection String: " + configuration.GetConnectionString("DefaultConnection"));
+        // // // Register Identity
         services.AddIdentity<ApplicationUser, IdentityRole>()
        .AddEntityFrameworkStores<AppointmentSystemDbContext>()
        .AddDefaultTokenProviders();
