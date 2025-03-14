@@ -65,13 +65,20 @@ builder.Services.AddDbContext<AppointmentSystemDbContext>(options =>
 // resigter Cors
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: "AllowedOriginsPolicy",
+        options.AddPolicy(name: "AllowedOriginsPolicy",
                       policy =>
                       {
                           policy.WithOrigins("*")
                                 .AllowAnyHeader()
                                 .AllowAnyMethod();
                       });
+    // options.AddPolicy("AllowedOriginsPolicy", policy =>
+    // {
+    //     policy.WithOrigins("https://localhost:7071") // Change this to your Blazor Server URL
+    //           .AllowAnyHeader()
+    //           .AllowAnyMethod()
+    //           .AllowCredentials(); // Needed for authentication
+    // });
 });
 
 builder.Services.AddControllers();
@@ -126,6 +133,7 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "An error occurred while seeding the database.");
     }
 }
+// app.UseCors("AllowedOriginsPolicy");
 
 app.UseHttpsRedirection();
 

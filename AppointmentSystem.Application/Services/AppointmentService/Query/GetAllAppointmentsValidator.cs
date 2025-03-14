@@ -4,7 +4,7 @@ public class GetAllAppointmentsValidator : AbstractValidator<GetAllAppointments.
 {
     public GetAllAppointmentsValidator()
     {
-        RuleFor(x => x.SearchParam).NotEmpty().WithMessage("Search parameter is required");
+        // RuleFor(x => x.SearchParam).NotEmpty().WithMessage("Search parameter is required");
     }
     
 }

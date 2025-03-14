@@ -28,16 +28,16 @@ public class AppointmentRepository : IAppointmentRepository
 
     public async Task<(List<Appointment>, int)> GetAllAsync(string parameters = null)
     {
-        IQueryable<Appointment> query = _context.Appointments;
+        // IQueryable<Appointment> query = _context.Appointments;
 
         // Apply raw SQL query if parameters are provided (use with caution!)
-        if (!string.IsNullOrEmpty(parameters))
-        {
-            query = _context.Appointments.FromSqlRaw(parameters);
-        }
+        // if (!string.IsNullOrEmpty(parameters))
+        // {
+        //     query = _context.Appointments.Where(a => a.PatientId == parameters);
+        // }
 
         // Execute the query and get the results
-        var appointments = await query.ToListAsync();
+        var appointments = await  _context.Appointments.ToListAsync();
 
         // Return the list of appointments and the count
         return (appointments, appointments.Count);
