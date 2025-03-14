@@ -16,10 +16,39 @@ namespace AppointmentSystem.Infrastructure.Repositories
             _userManager = userManager;
         }
 
-        public async Task<IApplicationUser> FindByUsernameAsync(string username)
+        public async Task<IApplicationUser?> FindByUsernameAsync(string username)
         {
-            return await _userManager.FindByNameAsync(username);
+            Console.WriteLine($"🔍 Searching for user: {username}");
+
+            // Normalize the username and email
+            var normalizedUsername = _userManager.NormalizeName(username);
+            var normalizedEmail = _userManager.NormalizeEmail(username);
+
+            Console.WriteLine($"🔹 Normalized UserName: {normalizedUsername}");
+            Console.WriteLine($"🔹 Normalized Email: {normalizedEmail}");
+
+            // Try finding the user by UserName
+            var user = await _userManager.FindByNameAsync(normalizedUsername);
+            if (user != null)
+            {
+                Console.WriteLine($"✅ User found by UserName: {user.UserName}");
+                return user;
+            }
+
+            Console.WriteLine("❌ User not found by UserName, trying Email...");
+
+            // Try finding the user by Email
+             user = await _userManager.FindByEmailAsync(normalizedEmail);
+            if (user != null)
+            {
+                Console.WriteLine($"✅ User found by Email: {user.Email}");
+                return user;
+            }
+
+            Console.WriteLine("❌ User not found by either UserName or Email.");
+            return null;
         }
+
 
         public async Task<bool> VerifyPasswordAsync(string username, string password)
         {
@@ -67,17 +96,17 @@ namespace AppointmentSystem.Infrastructure.Repositories
         }
 
         public async Task<string> GenerateTokenWithClaimsAsync(IApplicationUser user)
-{
-    // Cast the user to ApplicationUser
-    var appUser = user as ApplicationUser;
-    if (appUser == null)
-        throw new ArgumentException("User must be of type ApplicationUser");
+        {
+            // Cast the user to ApplicationUser
+            var appUser = user as ApplicationUser;
+            if (appUser == null)
+                throw new ArgumentException("User must be of type ApplicationUser");
 
-    // Get the user's roles
-    var roles = await _userManager.GetRolesAsync(appUser);
+            // Get the user's roles
+            var roles = await _userManager.GetRolesAsync(appUser);
 
-    // Create a list of claims
-    var claims = new List<Claim>
+            // Create a list of claims
+            var claims = new List<Claim>
     {
         new Claim(ClaimTypes.NameIdentifier, appUser.Id), // User ID
         new Claim(ClaimTypes.Name, appUser.UserName),     // Username
@@ -85,34 +114,34 @@ namespace AppointmentSystem.Infrastructure.Repositories
         new Claim("aud", "http://localhost:5047")       // ✅ Add Audience claim
     };
 
-    // Add roles as claims
-    foreach (var role in roles)
-    {
-        claims.Add(new Claim(ClaimTypes.Role, role));
-    }
+            // Add roles as claims
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
-    // Get JWT settings from configuration
-    var issuer = "http://localhost:5047"; // Change as needed
-    var audience = "http://localhost:5047"; // Change as needed
-    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("YourSuperSecretKeyHere_1234567890"));
+            // Get JWT settings from configuration
+            var issuer = "http://localhost:5047"; // Change as needed
+            var audience = "http://localhost:5047"; // Change as needed
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("YourSuperSecretKeyHere_1234567890"));
 
-    // Create the token descriptor
-    var tokenDescriptor = new SecurityTokenDescriptor
-    {
-        Subject = new ClaimsIdentity(claims),
-        Expires = DateTime.UtcNow.AddHours(1), // Token expiration time
-        Issuer = issuer,   // ✅ Add Issuer
-        Audience = audience, // ✅ Add Audience
-        SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
-    };
+            // Create the token descriptor
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.AddHours(1), // Token expiration time
+                Issuer = issuer,   // ✅ Add Issuer
+                Audience = audience, // ✅ Add Audience
+                SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
+            };
 
-    // Generate the token
-    var tokenHandler = new JwtSecurityTokenHandler();
-    var token = tokenHandler.CreateToken(tokenDescriptor);
+            // Generate the token
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
 
-    // Return the token as a string
-    return tokenHandler.WriteToken(token);
-}
+            // Return the token as a string
+            return tokenHandler.WriteToken(token);
+        }
 
     }
 }
