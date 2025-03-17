@@ -15,17 +15,9 @@ namespace AppointmentSystem.Application.Appointments.Commands
         public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
+        public Guid? ProfessionalAvailabilityId { get; set; }
     }
 
-    // public class CreateAppointmentCommandValidator : AbstractValidator<CreateAppointmentCommand>
-    // {
-    //     public CreateAppointmentCommandValidator()
-    //     {
-    //         RuleFor(x => x.PatientId).NotEmpty();
-    //         RuleFor(x => x.ProfessionalId).NotEmpty();
-    //         RuleFor(x => x.AppointmentDate).GreaterThan(DateTime.UtcNow);
-    //     }
-    // }
 
     public class CreateAppointmentCommandHandler : IRequestHandler<CreateAppointment, Appointment>
     {
@@ -48,7 +40,8 @@ namespace AppointmentSystem.Application.Appointments.Commands
                 AppointmentDate = request.AppointmentDate,
                 Status = request.Status,
                 CreatedAt = request.CreatedAt,
-                UpdatedAt = request.UpdatedAt
+                UpdatedAt = request.UpdatedAt,
+                ProfessionalAvailabilityId = request.ProfessionalAvailabilityId
             };
 
             await _unitOfWork.Appointments.AddAsync(appointment);

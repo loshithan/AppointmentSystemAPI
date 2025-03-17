@@ -28,7 +28,7 @@ public class AppointmentRepository : IAppointmentRepository
 
     public async Task<(List<Appointment>, int)> GetAllAsync(string parameters)
     {
-        IQueryable<Appointment> query = _context.Appointments;
+        IQueryable<Appointment> query = _context.Appointments.Include(a=>a.ProfessionalAvailability);
 
         //Apply raw SQL query if parameters are provided (use with caution!)
         if (!string.IsNullOrEmpty(parameters))

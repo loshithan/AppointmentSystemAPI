@@ -13,8 +13,8 @@ namespace AppointmentSystem.Domain.Entities
 
             public string? HospitalName { get; set; }
             public string? HospitalAddress { get; set; }
-
-            public Specialisation? Specialisation { get; set; }
+            public string? Price { get; set; }
+            public Specialisation? Specialisation { get; set; } = null;
             public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         }
         public enum Specialisation

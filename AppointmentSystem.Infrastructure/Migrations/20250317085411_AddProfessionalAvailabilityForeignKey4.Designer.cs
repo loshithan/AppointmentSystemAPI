@@ -4,6 +4,7 @@ using AppointmentSystem.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppointmentSystem.Infrastructure.Migrations
 {
     [DbContext(typeof(AppointmentSystemDbContext))]
-    partial class AppointmentSystemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250317085411_AddProfessionalAvailabilityForeignKey4")]
+    partial class AddProfessionalAvailabilityForeignKey4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -163,9 +166,6 @@ namespace AppointmentSystem.Infrastructure.Migrations
 
                     b.Property<bool>("IsBooked")
                         .HasColumnType("bit");
-
-                    b.Property<string>("Price")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProfessionalId")
                         .IsRequired()

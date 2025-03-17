@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using AppointmentSystem.Application.Services.ProfessionalAvailabilityService.Query;
 using AppointmentSystem.Application.Services.ProfessionalAvailabilityService.Command;
 using AppointmentSystem.Domain.Entities.AppointmentSystem.Domain.Entities;
+using AppointmentSystem.Application.DTOs;
 
 namespace AppointmentSystem.Api.Controllers
 {
@@ -19,6 +20,17 @@ namespace AppointmentSystem.Api.Controllers
         public async Task<ActionResult<List<ProfessionalAvailability>>> GetAll()
         {
             var query = new GetAllProfessionalAvailabilities.GetAllProfessionalAvailabilitiesQuery();
+            return await Mediator.Send(query);
+        }
+        [HttpGet("professionals")]
+        public async Task<ActionResult<List<DoctorWithAvailabilitiesDto>>> GetProfessionals([FromQuery] ProfessionalAvailabilityFilterParams filterParams)
+        {
+            var query = new GetProfessionals.GetProfessionalsQuery(){
+                AvailableDate = filterParams.AvailableDate,
+                DoctorName = filterParams.DoctorName,
+                HospitalName = filterParams.HospitalName,
+                Specialisation = filterParams.Specialisation
+            };
             return await Mediator.Send(query);
         }
 

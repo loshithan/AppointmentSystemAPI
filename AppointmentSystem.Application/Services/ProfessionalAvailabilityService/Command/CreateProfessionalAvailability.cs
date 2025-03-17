@@ -16,6 +16,12 @@ namespace AppointmentSystem.Application.Services.ProfessionalAvailabilityService
             public DateTime AvailableDate { get; set; }
             public TimeSpan StartTime { get; set; }
             public TimeSpan EndTime { get; set; }
+            public string? HospitalName { get; set; }
+
+            public Specialisation Specialisation { get; set; }
+
+            public string? HospitalAddress { get; set; }
+
             public bool IsBooked { get; set; } = false;
             public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         }
@@ -35,7 +41,12 @@ namespace AppointmentSystem.Application.Services.ProfessionalAvailabilityService
                 {
                     ProfessionalId = request.ProfessionalId,
                     StartTime = request.StartTime,
-                    EndTime = request.EndTime
+                    EndTime = request.EndTime,
+                    AvailableDate = request.AvailableDate,
+                    HospitalName = request.HospitalName,
+                    Specialisation = request.Specialisation,
+                    HospitalAddress = request.HospitalAddress,
+                    IsBooked = request.IsBooked
                 };
 
                 var newEntity = await _unitOfWork.ProfessionalAvailabilities.AddAsync(entity);

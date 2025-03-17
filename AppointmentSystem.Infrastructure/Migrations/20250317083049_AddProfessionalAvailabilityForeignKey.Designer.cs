@@ -4,6 +4,7 @@ using AppointmentSystem.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppointmentSystem.Infrastructure.Migrations
 {
     [DbContext(typeof(AppointmentSystemDbContext))]
-    partial class AppointmentSystemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250317083049_AddProfessionalAvailabilityForeignKey")]
+    partial class AddProfessionalAvailabilityForeignKey
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -116,7 +119,7 @@ namespace AppointmentSystem.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<Guid?>("ProfessionalAvailabilityId")
+                    b.Property<Guid>("ProfessionalAvailabilityId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ProfessionalId")
@@ -163,9 +166,6 @@ namespace AppointmentSystem.Infrastructure.Migrations
 
                     b.Property<bool>("IsBooked")
                         .HasColumnType("bit");
-
-                    b.Property<string>("Price")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProfessionalId")
                         .IsRequired()
@@ -334,7 +334,9 @@ namespace AppointmentSystem.Infrastructure.Migrations
 
                     b.HasOne("AppointmentSystem.Domain.Entities.AppointmentSystem.Domain.Entities.ProfessionalAvailability", "ProfessionalAvailability")
                         .WithMany()
-                        .HasForeignKey("ProfessionalAvailabilityId");
+                        .HasForeignKey("ProfessionalAvailabilityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ApplicationUser", null)
                         .WithMany()
