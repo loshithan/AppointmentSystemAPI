@@ -5,6 +5,8 @@ public class GetAllAppointments
     public class Query : IRequest<List<Appointment>>
     {
         public string? SearchParam { get; set; } 
+        public string? PatientId{ get; set; }
+        public bool? isAdmin { get; set; }
         //= "" ; // Foreign Key for Patient
        
         
@@ -21,8 +23,17 @@ public class GetAllAppointments
 
         public async Task<List<Appointment>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var (appointments, _) = await _unitOfWork.Appointments.GetAllAsync(request.SearchParam);
-            return appointments;
+            if (request.isAdmin == true)
+            {
+                var (appointments, _) = await _unitOfWork.Appointments.GetAllAsync(request.SearchParam);
+                return appointments;
+            }
+            else
+            {
+                var (appointments, _) = await _unitOfWork.Appointments.GetAppointmentsByPatientIdAsync(request.PatientId);
+                return appointments;
+            }
+          
         }
     }
 }

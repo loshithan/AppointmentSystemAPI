@@ -4,12 +4,13 @@ using Microsoft.AspNetCore.Authorization;
 using AppointmentSystem.Application.Appointments.Commands;
 using AppointmentSystem.Application.Services.AppointmentService.Query;
 using AppointmentSystem.Application.Services.AppointmentService.Command;
+using System.Security.Claims;
 
 namespace AppointmentSystem.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    // [Authorize] // Requires authentication for all actions in this controller
+    [Authorize] // Requires authentication for all actions in this controller
     public class AppointmentController : ControllerBase
     {
         private ISender _mediator = null!;
@@ -18,7 +19,9 @@ namespace AppointmentSystem.Api.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Appointment>>> GetAll([FromQuery] string searchParam = "")
         {
-            var query = new GetAllAppointments.Query() { SearchParam = searchParam };
+            var isAdmin = User.IsInRole("Admin"); // Check if user is an admin
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Extract UserId from claims
+            var query = new GetAllAppointments.Query() { SearchParam = searchParam, PatientId = userId, isAdmin = isAdmin };
             return await Mediator.Send(query);
         }
 
