@@ -12,6 +12,8 @@ namespace AppointmentSystem.Application.Services.ProfessionalAvailabilityService
     public class GetAllProfessionalAvailabilitiesQuery : IRequest<List<ProfessionalAvailability>> 
     {
        public string? SearchParam { get; set; }
+        public string? ProfessionalId{ get; set; }
+        public bool? isAdmin { get; set; }
 
     }
 
@@ -26,8 +28,14 @@ namespace AppointmentSystem.Application.Services.ProfessionalAvailabilityService
 
         public async Task<List<ProfessionalAvailability>> Handle(GetAllProfessionalAvailabilitiesQuery request, CancellationToken cancellationToken)
         {
-            var (availabilities, _) = await _unitOfWork.ProfessionalAvailabilities.GetAllAsync(request.SearchParam);
-            return availabilities;
+             if (request.isAdmin == true){
+                var (availabilities, _) = await _unitOfWork.ProfessionalAvailabilities.GetAllAsync(request.SearchParam);
+                return availabilities;
+             }else{
+                var (availabilities, _) = await _unitOfWork.ProfessionalAvailabilities.GetAllByProfessionalIdAsync(request.ProfessionalId);
+                return availabilities;
+             }
+            
         }
     }
 }

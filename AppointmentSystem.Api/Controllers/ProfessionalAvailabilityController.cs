@@ -5,6 +5,7 @@ using AppointmentSystem.Application.Services.ProfessionalAvailabilityService.Que
 using AppointmentSystem.Application.Services.ProfessionalAvailabilityService.Command;
 using AppointmentSystem.Domain.Entities.AppointmentSystem.Domain.Entities;
 using AppointmentSystem.Application.DTOs;
+using System.Security.Claims;
 
 namespace AppointmentSystem.Api.Controllers
 {
@@ -19,7 +20,9 @@ namespace AppointmentSystem.Api.Controllers
         [HttpGet]
         public async Task<ActionResult<List<ProfessionalAvailability>>> GetAll()
         {
-            var query = new GetAllProfessionalAvailabilities.GetAllProfessionalAvailabilitiesQuery();
+            var isAdmin = User.IsInRole("Admin"); // Check if user is an admin
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Extract UserId from claims
+            var query = new GetAllProfessionalAvailabilities.GetAllProfessionalAvailabilitiesQuery(){ SearchParam = "", ProfessionalId = userId, isAdmin = isAdmin };
             return await Mediator.Send(query);
         }
         [HttpGet("professionals")]

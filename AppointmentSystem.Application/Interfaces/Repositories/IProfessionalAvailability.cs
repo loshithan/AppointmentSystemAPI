@@ -5,5 +5,6 @@ public interface IProfessionalAvailabilityRepository : IGenericRepository<Profes
 {
     Task<List<DoctorWithAvailabilitiesDto>> GetProfessionalsAsync(
     ProfessionalAvailabilityFilterParams filterParams);
+    Task<(List<ProfessionalAvailability>, int)> GetAllByProfessionalIdAsync(string professionalId);
 }
 

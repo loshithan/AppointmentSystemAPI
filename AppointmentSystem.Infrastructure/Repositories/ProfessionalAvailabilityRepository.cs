@@ -19,18 +19,18 @@ public class ProfessionalAvailabilityRepository : IProfessionalAvailabilityRepos
 
     public async Task<ProfessionalAvailability> AddAsync(ProfessionalAvailability entity)
     {// Check if there is an existing availability for the same professional on the same date and within the same time slot
-    var existingAvailability = await _context.ProfessionalAvailabilities
-        .Where(pa => pa.ProfessionalId == entity.ProfessionalId &&
-                     pa.AvailableDate.Date == entity.AvailableDate.Date &&
-                     ((pa.StartTime <= entity.StartTime && pa.EndTime > entity.StartTime) || // Overlapping start time
-                      (pa.StartTime < entity.EndTime && pa.EndTime >= entity.EndTime) ||     // Overlapping end time
-                      (pa.StartTime >= entity.StartTime && pa.EndTime <= entity.EndTime)))    // Completely within the new slot
-        .FirstOrDefaultAsync();
+        var existingAvailability = await _context.ProfessionalAvailabilities
+            .Where(pa => pa.ProfessionalId == entity.ProfessionalId &&
+                         pa.AvailableDate.Date == entity.AvailableDate.Date &&
+                         ((pa.StartTime <= entity.StartTime && pa.EndTime > entity.StartTime) || // Overlapping start time
+                          (pa.StartTime < entity.EndTime && pa.EndTime >= entity.EndTime) ||     // Overlapping end time
+                          (pa.StartTime >= entity.StartTime && pa.EndTime <= entity.EndTime)))    // Completely within the new slot
+            .FirstOrDefaultAsync();
 
-    if (existingAvailability != null)
-    {
-        throw new InvalidOperationException("A session already exists for the same professional on the same date and within the specified time slot.");
-    }
+        if (existingAvailability != null)
+        {
+            throw new InvalidOperationException("A session already exists for the same professional on the same date and within the specified time slot.");
+        }
         await _context.ProfessionalAvailabilities.AddAsync(entity);
         return entity;
     }
@@ -53,6 +53,15 @@ public class ProfessionalAvailabilityRepository : IProfessionalAvailabilityRepos
         {
             query = _context.ProfessionalAvailabilities.FromSqlRaw(parameters);
         }
+
+        var availabilityList = await query.ToListAsync();
+        return (availabilityList, availabilityList.Count);
+    }
+    // Overloaded method for fetching availability by Professional ID
+    public async Task<(List<ProfessionalAvailability>, int)> GetAllByProfessionalIdAsync(string professionalId)
+    {
+        IQueryable<ProfessionalAvailability> query = _context.ProfessionalAvailabilities
+            .Where(pa => pa.ProfessionalId == professionalId); // Filter by Professional ID
 
         var availabilityList = await query.ToListAsync();
         return (availabilityList, availabilityList.Count);
@@ -80,14 +89,14 @@ public class ProfessionalAvailabilityRepository : IProfessionalAvailabilityRepos
                         Doctor = doc
                     };
 
-         var groupedResults = await query
-        .GroupBy(x => x.Doctor)
-        .Select(g => new DoctorWithAvailabilitiesDto
-        {
-            Doctor = g.Key,
-            Availabilities = g.Select(x => x.Availability).ToList()
-        })
-        .ToListAsync();
+        var groupedResults = await query
+       .GroupBy(x => x.Doctor)
+       .Select(g => new DoctorWithAvailabilitiesDto
+       {
+           Doctor = g.Key,
+           Availabilities = g.Select(x => x.Availability).ToList()
+       })
+       .ToListAsync();
 
         return groupedResults;
     }
