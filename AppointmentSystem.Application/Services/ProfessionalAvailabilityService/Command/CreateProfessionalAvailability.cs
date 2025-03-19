@@ -21,6 +21,7 @@ namespace AppointmentSystem.Application.Services.ProfessionalAvailabilityService
             public Specialisation Specialisation { get; set; }
 
             public string? HospitalAddress { get; set; }
+            public string? Price { get; set; }
 
             public bool IsBooked { get; set; } = false;
             public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
@@ -46,7 +47,8 @@ namespace AppointmentSystem.Application.Services.ProfessionalAvailabilityService
                     HospitalName = request.HospitalName,
                     Specialisation = request.Specialisation,
                     HospitalAddress = request.HospitalAddress,
-                    IsBooked = request.IsBooked
+                    IsBooked = request.IsBooked,
+                    Price = request.Price,
                 };
 
                 var newEntity = await _unitOfWork.ProfessionalAvailabilities.AddAsync(entity);

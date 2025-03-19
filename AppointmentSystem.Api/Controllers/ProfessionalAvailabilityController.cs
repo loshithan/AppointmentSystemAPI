@@ -10,7 +10,7 @@ namespace AppointmentSystem.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    // [Authorize] // Requires authentication for all actions in this controller
+    [Authorize] // Requires authentication for all actions in this controller
     public class ProfessionalAvailabilityController : ControllerBase
     {
         private ISender _mediator = null!;

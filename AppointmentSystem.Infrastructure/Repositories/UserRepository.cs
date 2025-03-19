@@ -38,7 +38,7 @@ namespace AppointmentSystem.Infrastructure.Repositories
             Console.WriteLine("❌ User not found by UserName, trying Email...");
 
             // Try finding the user by Email
-             user = await _userManager.FindByEmailAsync(normalizedEmail);
+            user = await _userManager.FindByEmailAsync(normalizedEmail);
             if (user != null)
             {
                 Console.WriteLine($"✅ User found by Email: {user.Email}");
@@ -59,19 +59,37 @@ namespace AppointmentSystem.Infrastructure.Repositories
             return await _userManager.CheckPasswordAsync((ApplicationUser)user, password);
         }
 
-        public async Task<RegistrationResult> RegisterAsync(string username, string email, string password)
+        public async Task<RegistrationResult> RegisterAsync(string username, string email, string password, string role)
         {
+            // Create the user
             var user = new ApplicationUser
             {
                 UserName = username,
-                Email = email
+                Email = email,
+                Role = role
             };
 
+            // Create the user in the database
             var identityResult = await _userManager.CreateAsync(user, password);
 
             if (identityResult.Succeeded)
-                return RegistrationResult.Success();
+            {
+                // Assign the specified role to the user by role name
+                var roleResult = await _userManager.AddToRoleAsync(user, role);
 
+                if (roleResult.Succeeded)
+                {
+                    return RegistrationResult.Success();
+                }
+                else
+                {
+                    // If role assignment fails, delete the user and return the error
+                    await _userManager.DeleteAsync(user);
+                    return RegistrationResult.Failure(roleResult.Errors.Select(e => e.Description).ToList());
+                }
+            }
+
+            // If user creation fails, return the error
             return RegistrationResult.Failure(identityResult.Errors.Select(e => e.Description).ToList());
         }
 
@@ -107,12 +125,12 @@ namespace AppointmentSystem.Infrastructure.Repositories
 
             // Create a list of claims
             var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.NameIdentifier, appUser.Id), // User ID
-        new Claim(ClaimTypes.Name, appUser.UserName),     // Username
-        new Claim(ClaimTypes.Email, appUser.Email),       // Email
-        new Claim("aud", "http://localhost:5047")       // ✅ Add Audience claim
-    };
+            {
+                new Claim(ClaimTypes.NameIdentifier, appUser.Id), // User ID
+                new Claim(ClaimTypes.Name, appUser.UserName),     // Username
+                new Claim(ClaimTypes.Email, appUser.Email),       // Email
+                new Claim("aud", "http://localhost:5047")       // ✅ Add Audience claim
+            };
 
             // Add roles as claims
             foreach (var role in roles)

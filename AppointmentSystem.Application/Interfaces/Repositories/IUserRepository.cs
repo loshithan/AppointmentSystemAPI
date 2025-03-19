@@ -9,7 +9,7 @@ namespace AppointmentSystem.Application.Interfaces.Repositories
         Task<bool> VerifyPasswordAsync(string username, string password);
 
         // Register a new user
-        Task<RegistrationResult> RegisterAsync(string username, string email, string password);
+        Task<RegistrationResult> RegisterAsync(string username, string email, string password,string role);
 
         // Generate a token for a user
         Task<string> GenerateTokenWithClaimsAsync(IApplicationUser user);

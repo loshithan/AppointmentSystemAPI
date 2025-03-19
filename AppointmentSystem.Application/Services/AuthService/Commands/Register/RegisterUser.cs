@@ -9,6 +9,8 @@ namespace AppointmentSystem.Application.Features.Auth.Commands.Register
         public string Username { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
+
+        public string Role{get;set;}
     }
     public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegistrationResult>
     {
@@ -21,7 +23,7 @@ namespace AppointmentSystem.Application.Features.Auth.Commands.Register
 
         public async Task<RegistrationResult> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
-            return await _userRepository.RegisterAsync(request.Username, request.Email, request.Password);
+            return await _userRepository.RegisterAsync(request.Username, request.Email, request.Password,request.Role);
         }
     }
 }
