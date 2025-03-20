@@ -82,7 +82,7 @@ public class ProfessionalAvailabilityRepository : IProfessionalAvailabilityRepos
                           (string.IsNullOrEmpty(filterParams.HospitalName) || pa.HospitalName.Contains(filterParams.HospitalName)) &&
                           (string.IsNullOrEmpty(filterParams.DoctorName) || doc.UserName.Contains(filterParams.DoctorName)) &&
                           (!filterParams.Specialisation.HasValue || pa.Specialisation == filterParams.Specialisation.Value) &&
-                          userRole.RoleId == "54caf907-14c0-4458-8890-a8231168a613" // Filter by role ID
+                          (userRole.RoleId == "54caf907-14c0-4458-8890-a8231168a613" || userRole.RoleId == "507544d4-b31f-4efb-ae8a-3a09d76293de" ) // Filter by role ID
                     select new ProfessionalAvailabilityWithDoctorDto
                     {
                         Availability = pa,

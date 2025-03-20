@@ -21,12 +21,10 @@ namespace AppointmentSystem.Application.Appointments.Commands
 
     public class CreateAppointmentCommandHandler : IRequestHandler<CreateAppointment, Appointment>
     {
-        private readonly IAppointmentRepository _appointmentRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public CreateAppointmentCommandHandler(IAppointmentRepository appointmentRepository, IUnitOfWork unitOfWork)
+        public CreateAppointmentCommandHandler( IUnitOfWork unitOfWork)
         {
-            _appointmentRepository = appointmentRepository;
             _unitOfWork = unitOfWork;
         }
 

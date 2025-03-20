@@ -37,6 +37,8 @@ namespace AppointmentSystem.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<Appointment>> Create([FromBody] CreateAppointment command)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Extract UserId from claims
+            command.PatientId = userId;
             var result = await Mediator.Send(command);
             return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }

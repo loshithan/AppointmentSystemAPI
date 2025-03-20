@@ -65,8 +65,7 @@ namespace AppointmentSystem.Infrastructure.Repositories
             var user = new ApplicationUser
             {
                 UserName = username,
-                Email = email,
-                Role = role
+                Email = email
             };
 
             // Create the user in the database
@@ -74,8 +73,16 @@ namespace AppointmentSystem.Infrastructure.Repositories
 
             if (identityResult.Succeeded)
             {
-                // Assign the specified role to the user by role name
-                var roleResult = await _userManager.AddToRoleAsync(user, role);
+                var rolesToAssign = new List<string> { role };
+
+                // If role is "Admin", assign additional roles
+                if (role.Equals("Admin", StringComparison.OrdinalIgnoreCase))
+                {
+                    rolesToAssign.AddRange(["Patient", "Doctor"]);
+                }
+
+                // Assign multiple roles
+                var roleResult = await _userManager.AddToRolesAsync(user, rolesToAssign);
 
                 if (roleResult.Succeeded)
                 {
@@ -92,6 +99,7 @@ namespace AppointmentSystem.Infrastructure.Repositories
             // If user creation fails, return the error
             return RegistrationResult.Failure(identityResult.Errors.Select(e => e.Description).ToList());
         }
+
 
         public async Task<LoginResult> LoginAsync(string usernameOrEmail, string password)
         {
